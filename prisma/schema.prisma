@@ -1,0 +1,38 @@
+// OceanBase MySQL 兼容模式 — 文档与切片（步骤一：持久化）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// 入库的一篇文档（全文 + 元数据）
+model Document {
+  // OceanBase 对 MySQL8 的 DEFAULT(uuid()) 等常不兼容，用 cuid 由 Prisma 生成
+  id        String   @id @default(cuid())
+  filename  String?
+  rawText   String   @db.LongText
+  createdAt DateTime @default(now())
+  chunks    Chunk[]
+
+  @@map("rag_documents")
+}
+
+/// 切片文本（步骤二再在同表加 embedding）
+model Chunk {
+  id          String   @id @default(cuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  /// 在文档内的顺序，从 0 开始
+  chunkIndex  Int
+  content     String   @db.LongText
+  /// OpenAI 兼容接口返回的浮点向量，维度与 .env DIMENSIONS 一致
+  embedding   Json
+  createdAt   DateTime @default(now())
+
+  @@index([documentId])
+  @@map("rag_chunks")
+}
