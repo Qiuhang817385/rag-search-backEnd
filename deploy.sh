@@ -6,10 +6,11 @@
 # 若用单独 Deploy Key 拉私库，取消下面 GIT_SSH_COMMAND 的注释并改路径
 # export GIT_SSH_COMMAND='ssh -i /root/.ssh/github_deploy -o IdentitiesOnly=yes'
 
-set -euo pipefail
-
 cd "$(dirname "$0")"
 
+# 必须在「未开启 nounset」时 source /etc/profile：其中会使用 HISTSIZE 等变量，
+# 若已执行 set -u，会报「HISTSIZE: unbound variable」。
+set +u
 # GitHub Actions / 非交互 SSH 不会读登录 shell 的 .bashrc，常导致「pnpm: command not found」
 # 与「你手动 ssh 上去明明有 pnpm」不矛盾：交互会话加载了 nvm/corepack 等。
 if [ -f /etc/profile ]; then
@@ -36,6 +37,10 @@ if command -v corepack >/dev/null 2>&1; then
   corepack enable >/dev/null 2>&1 || true
 fi
 export PATH="${HOME}/.local/share/pnpm:/usr/local/bin:${PATH}"
+
+set -u
+set -e
+set -o pipefail
 
 if ! command -v pnpm >/dev/null 2>&1; then
   echo "ERROR: pnpm 不在 PATH 中。请在服务器以部署用户执行: which pnpm"
