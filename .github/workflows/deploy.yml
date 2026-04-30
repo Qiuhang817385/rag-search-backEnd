@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-tencent-cvm.yml@main
+    uses: ./.github/workflows/deploy-tencent-cvm.yml
     with:
       deploy_directory: /var/www/rag-search-backEnd
       deploy_script: ./deploy.sh
