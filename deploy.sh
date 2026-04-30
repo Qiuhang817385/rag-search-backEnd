@@ -10,6 +10,39 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+# GitHub Actions / 非交互 SSH 不会读登录 shell 的 .bashrc，常导致「pnpm: command not found」
+# 与「你手动 ssh 上去明明有 pnpm」不矛盾：交互会话加载了 nvm/corepack 等。
+if [ -f /etc/profile ]; then
+  # shellcheck source=/dev/null
+  . /etc/profile
+fi
+if [ -f "${HOME}/.bash_profile" ]; then
+  # shellcheck source=/dev/null
+  . "${HOME}/.bash_profile"
+elif [ -f "${HOME}/.bashrc" ]; then
+  # shellcheck source=/dev/null
+  . "${HOME}/.bashrc"
+fi
+if [ -f "${HOME}/.profile" ]; then
+  # shellcheck source=/dev/null
+  . "${HOME}/.profile"
+fi
+export NVM_DIR="${NVM_DIR:-${HOME}/.nvm}"
+if [ -s "${NVM_DIR}/nvm.sh" ]; then
+  # shellcheck source=/dev/null
+  . "${NVM_DIR}/nvm.sh"
+fi
+if command -v corepack >/dev/null 2>&1; then
+  corepack enable >/dev/null 2>&1 || true
+fi
+export PATH="${HOME}/.local/share/pnpm:/usr/local/bin:${PATH}"
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "ERROR: pnpm 不在 PATH 中。请在服务器以部署用户执行: which pnpm"
+  echo "并把该目录加入本脚本 PATH，或改用全路径调用 pnpm。"
+  exit 127
+fi
+
 BRANCH="${DEPLOY_BRANCH:-main}"
 APP_NAME="${PM2_APP_NAME:-rag-search-api}"
 
