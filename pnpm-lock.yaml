@@ -7,13 +7,13 @@ settings:
 dependencies:
   '@langchain/core':
     specifier: ^1.1.42
-    version: 1.1.42(openai@6.35.0)
+    version: 1.1.42(openai@6.35.0)(ws@8.20.0)
   '@langchain/deepseek':
     specifier: ^1.0.25
-    version: 1.0.25(@langchain/core@1.1.42)
+    version: 1.0.25(@langchain/core@1.1.42)(ws@8.20.0)
   '@langchain/openai':
     specifier: ^1.4.5
-    version: 1.4.5(@langchain/core@1.1.42)
+    version: 1.4.5(@langchain/core@1.1.42)(ws@8.20.0)
   '@langchain/textsplitters':
     specifier: ^1.0.1
     version: 1.0.1(@langchain/core@1.1.42)
@@ -22,10 +22,16 @@ dependencies:
     version: 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
   '@nestjs/core':
     specifier: ^11.0.1
-    version: 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+    version: 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(@nestjs/websockets@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
   '@nestjs/platform-express':
     specifier: ^11.0.1
     version: 11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)
+  '@nestjs/platform-ws':
+    specifier: ^11.1.19
+    version: 11.1.19(@nestjs/common@11.1.19)(@nestjs/websockets@11.1.19)(rxjs@7.8.2)
+  '@nestjs/websockets':
+    specifier: ^11.1.19
+    version: 11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
   '@prisma/client':
     specifier: ^6.19.0
     version: 6.19.3(prisma@6.19.3)(typescript@5.9.3)
@@ -34,10 +40,10 @@ dependencies:
     version: 17.4.2
   langchain:
     specifier: ^1.3.5
-    version: 1.3.5(@langchain/core@1.1.42)(openai@6.35.0)
+    version: 1.3.5(@langchain/core@1.1.42)(openai@6.35.0)(ws@8.20.0)
   openai:
     specifier: ^6.35.0
-    version: 6.35.0(zod@4.3.6)
+    version: 6.35.0(ws@8.20.0)(zod@4.3.6)
   prisma:
     specifier: ^6.19.0
     version: 6.19.3(typescript@5.9.3)
@@ -47,6 +53,9 @@ dependencies:
   rxjs:
     specifier: ^7.8.1
     version: 7.8.2
+  ws:
+    specifier: ^8.20.0
+    version: 8.20.0
   zod:
     specifier: ^4.3.6
     version: 4.3.6
@@ -79,6 +88,12 @@ devDependencies:
   '@types/supertest':
     specifier: ^7.0.0
     version: 7.2.0
+  '@types/ws':
+    specifier: ^8.18.1
+    version: 8.18.1
+  cross-env:
+    specifier: ^10.1.0
+    version: 10.1.0
   eslint:
     specifier: ^9.18.0
     version: 9.39.4
@@ -544,6 +559,10 @@ packages:
       tslib: 2.8.1
     dev: true
     optional: true
+
+  /@epic-web/invariant@1.0.0:
+    resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
+    dev: true
 
   /@eslint-community/eslint-utils@4.9.1(eslint@9.39.4):
     resolution: {integrity: sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==}
@@ -1216,7 +1235,7 @@ packages:
       '@jridgewell/sourcemap-codec': 1.5.5
     dev: true
 
-  /@langchain/core@1.1.42(openai@6.35.0):
+  /@langchain/core@1.1.42(openai@6.35.0)(ws@8.20.0):
     resolution: {integrity: sha512-d0tN96BrwPMryYyWR9VfyAntSivn7EQrZCe5Kpxum93tcjTXbKKmKvItFec8AluQt88iTcmAJrahUZUNfzGwTA==}
     engines: {node: '>=20'}
     dependencies:
@@ -1226,7 +1245,7 @@ packages:
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.21
-      langsmith: 0.5.26(openai@6.35.0)
+      langsmith: 0.5.26(openai@6.35.0)(ws@8.20.0)
       mustache: 4.2.0
       p-queue: 6.6.2
       zod: 4.3.6
@@ -1238,14 +1257,14 @@ packages:
       - ws
     dev: false
 
-  /@langchain/deepseek@1.0.25(@langchain/core@1.1.42):
+  /@langchain/deepseek@1.0.25(@langchain/core@1.1.42)(ws@8.20.0):
     resolution: {integrity: sha512-8IvUmS6oeSRt129Z6d7MUqBeQlVmOiP7EfLGWCTh8BMCg6IA0n8uAb7057ryOUgzuVF6GtAAJVKmFF0CnOSIJQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@langchain/core': ^1.0.0
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
-      '@langchain/openai': 1.4.5(@langchain/core@1.1.42)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
+      '@langchain/openai': 1.4.5(@langchain/core@1.1.42)(ws@8.20.0)
     transitivePeerDependencies:
       - ws
     dev: false
@@ -1256,7 +1275,7 @@ packages:
     peerDependencies:
       '@langchain/core': ^1.0.1
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
       uuid: 10.0.0
     dev: false
 
@@ -1280,7 +1299,7 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
       '@types/json-schema': 7.0.15
       p-queue: 9.2.0
       p-retry: 7.1.1
@@ -1298,7 +1317,7 @@ packages:
       zod-to-json-schema:
         optional: true
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
       '@langchain/langgraph-checkpoint': 1.0.1(@langchain/core@1.1.42)
       '@langchain/langgraph-sdk': 1.8.9(@langchain/core@1.1.42)
       '@standard-schema/spec': 1.1.0
@@ -1311,15 +1330,15 @@ packages:
       - vue
     dev: false
 
-  /@langchain/openai@1.4.5(@langchain/core@1.1.42):
+  /@langchain/openai@1.4.5(@langchain/core@1.1.42)(ws@8.20.0):
     resolution: {integrity: sha512-bQ2WMIZfSh02trJLYSAtiIcD3j6EBCiAm9nw0dZWQsVaUxmWc3JJqs8uUte6AkMazmLHzcUIw+14UkXO5fRJvQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@langchain/core': ^1.1.42
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
       js-tiktoken: 1.0.21
-      openai: 6.35.0(zod@4.3.6)
+      openai: 6.35.0(ws@8.20.0)(zod@4.3.6)
       zod: 4.3.6
     transitivePeerDependencies:
       - ws
@@ -1331,7 +1350,7 @@ packages:
     peerDependencies:
       '@langchain/core': ^1.0.0
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
       js-tiktoken: 1.0.21
     dev: false
 
@@ -1411,7 +1430,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@nestjs/core@11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2):
+  /@nestjs/core@11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(@nestjs/websockets@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2):
     resolution: {integrity: sha512-6nJkWa2efrYi+XlU686J9y5L7OvxpLVjT0T/sxRKE7Jvpffiihelup4WSvLvRhdHDjj/5SuoWEwqReXAaaeHmw==}
     engines: {node: '>= 20'}
     requiresBuild: true
@@ -1432,6 +1451,7 @@ packages:
     dependencies:
       '@nestjs/common': 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/platform-express': 11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)
+      '@nestjs/websockets': 11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nuxt/opencollective': 0.4.1
       fast-safe-stringify: 2.1.1
       iterare: 1.2.1
@@ -1448,7 +1468,7 @@ packages:
       '@nestjs/core': ^11.0.0
     dependencies:
       '@nestjs/common': 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(@nestjs/websockets@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       cors: 2.8.6
       express: 5.2.1
       multer: 2.1.1
@@ -1456,6 +1476,23 @@ packages:
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
+
+  /@nestjs/platform-ws@11.1.19(@nestjs/common@11.1.19)(@nestjs/websockets@11.1.19)(rxjs@7.8.2):
+    resolution: {integrity: sha512-5zfSSki1Sy9jGduwRxJIUr7TaH/TRiIEMaGtiP0qHJyY3pu+I5Qtv0mrksHr6P81J6nFd2RdBc8sJZXuHIWWTg==}
+    peerDependencies:
+      '@nestjs/common': ^11.0.0
+      '@nestjs/websockets': ^11.0.0
+      rxjs: ^7.1.0
+    dependencies:
+      '@nestjs/common': 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/websockets': 11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      rxjs: 7.8.2
+      tslib: 2.8.1
+      ws: 8.20.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
 
   /@nestjs/schematics@11.1.0(chokidar@4.0.3)(prettier@3.8.3)(typescript@5.9.3):
     resolution: {integrity: sha512-lVxGZ46tcdItFMoXr6vyKWlnOsm1SZm/GUqAEDvy2RL4Q4O+3bkziAhrO7Y8JLssFUUvNFEGqAizI52WAxhjDw==}
@@ -1491,10 +1528,30 @@ packages:
         optional: true
     dependencies:
       '@nestjs/common': 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(@nestjs/websockets@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/platform-express': 11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)
       tslib: 2.8.1
     dev: true
+
+  /@nestjs/websockets@11.1.19(@nestjs/common@11.1.19)(@nestjs/core@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2):
+    resolution: {integrity: sha512-2qo8jtIwwwgkqAI1BtnJ02EaFLrRkKA39eYXS8IhZCHilhBHCWdjnJ5cLcFq4oF+s+KZ7LcLGD/3stxJy8ijzg==}
+    peerDependencies:
+      '@nestjs/common': ^11.0.0
+      '@nestjs/core': ^11.0.0
+      '@nestjs/platform-socket.io': ^11.0.0
+      reflect-metadata: ^0.1.12 || ^0.2.0
+      rxjs: ^7.1.0
+    peerDependenciesMeta:
+      '@nestjs/platform-socket.io':
+        optional: true
+    dependencies:
+      '@nestjs/common': 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.19(@nestjs/common@11.1.19)(@nestjs/platform-express@11.1.19)(@nestjs/websockets@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      iterare: 1.2.1
+      object-hash: 3.0.0
+      reflect-metadata: 0.2.2
+      rxjs: 7.8.2
+      tslib: 2.8.1
 
   /@noble/hashes@1.8.0:
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
@@ -1802,6 +1859,12 @@ packages:
     dependencies:
       '@types/methods': 1.1.4
       '@types/superagent': 8.1.9
+    dev: true
+
+  /@types/ws@8.18.1:
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
+    dependencies:
+      '@types/node': 24.12.2
     dev: true
 
   /@types/yargs-parser@21.0.3:
@@ -2854,6 +2917,15 @@ packages:
 
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+    dev: true
+
+  /cross-env@10.1.0:
+    resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
+    engines: {node: '>=20'}
+    hasBin: true
+    dependencies:
+      '@epic-web/invariant': 1.0.0
+      cross-spawn: 7.0.6
     dev: true
 
   /cross-spawn@7.0.6:
@@ -4349,16 +4421,16 @@ packages:
       json-buffer: 3.0.1
     dev: true
 
-  /langchain@1.3.5(@langchain/core@1.1.42)(openai@6.35.0):
+  /langchain@1.3.5(@langchain/core@1.1.42)(openai@6.35.0)(ws@8.20.0):
     resolution: {integrity: sha512-QSB8TEo6G1tWupgNt1Osm8ylLLoOMq1lLw5NeijnIwRPI5BqdBjUn4/U8usbjEJJcQnbXSK2qTKgTx7zvblnBw==}
     engines: {node: '>=20'}
     peerDependencies:
       '@langchain/core': ^1.1.42
     dependencies:
-      '@langchain/core': 1.1.42(openai@6.35.0)
+      '@langchain/core': 1.1.42(openai@6.35.0)(ws@8.20.0)
       '@langchain/langgraph': 1.2.9(@langchain/core@1.1.42)(zod@4.3.6)
       '@langchain/langgraph-checkpoint': 1.0.1(@langchain/core@1.1.42)
-      langsmith: 0.5.26(openai@6.35.0)
+      langsmith: 0.5.26(openai@6.35.0)(ws@8.20.0)
       zod: 4.3.6
     transitivePeerDependencies:
       - '@opentelemetry/api'
@@ -4373,7 +4445,7 @@ packages:
       - zod-to-json-schema
     dev: false
 
-  /langsmith@0.5.26(openai@6.35.0):
+  /langsmith@0.5.26(openai@6.35.0)(ws@8.20.0):
     resolution: {integrity: sha512-HmmFgeQR2n9x1Kq8NiVaNL/j72ta71qN11hYjbyePJ/QuYEnOMhQjbNv9KeyKB3bOetpIzNalQbhHm+RyKoPRQ==}
     peerDependencies:
       '@opentelemetry/api': '*'
@@ -4393,8 +4465,9 @@ packages:
       ws:
         optional: true
     dependencies:
-      openai: 6.35.0(zod@4.3.6)
+      openai: 6.35.0(ws@8.20.0)(zod@4.3.6)
       p-queue: 6.6.2
+      ws: 8.20.0
     dev: false
 
   /leven@3.1.0:
@@ -4683,6 +4756,10 @@ packages:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
 
+  /object-hash@3.0.0:
+    resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
+    engines: {node: '>= 6'}
+
   /object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
@@ -4709,7 +4786,7 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /openai@6.35.0(zod@4.3.6):
+  /openai@6.35.0(ws@8.20.0)(zod@4.3.6):
     resolution: {integrity: sha512-L/skwIGnt5xQZHb0UfTu9uAUKbis3ehKypOuJKi20QvG7UStV6C8IC3myGYHcdiF4kms/bAvOJ9UqqNWqi8x/Q==}
     hasBin: true
     peerDependencies:
@@ -4721,6 +4798,7 @@ packages:
       zod:
         optional: true
     dependencies:
+      ws: 8.20.0
       zod: 4.3.6
     dev: false
 
@@ -5969,6 +6047,19 @@ packages:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
     dev: true
+
+  /ws@8.20.0:
+    resolution: {integrity: sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
 
   /y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
