@@ -13,9 +13,9 @@ import { SearchRequestDto } from './dto/search-request.dto';
 import { buildContextFromHits, RAG_SYSTEM_INSTRUCTION } from './prompt';
 import { cosineSimilarity, parseEmbeddingJson } from './similarity';
 import { parseStreamPartsFromChunk } from './stream-utils';
-import type { SearchHit } from './types';
+import type { SearchHit, SearchHitWithDocument } from './types';
 
-export type { SearchHit } from './types';
+export type { SearchHit, SearchHitWithDocument } from './types';
 
 const DEFAULT_TOP_K = 5;
 const MAX_TOP_K = 20;
@@ -88,6 +88,29 @@ export class RagService {
   }
 
   /**
+   * 按 chunk 上的 documentId 批量查 `rag_documents`，用 filename 作为展示名（空则回退 id）。
+   */
+  async attachDocumentDisplayNames(
+    hits: SearchHit[],
+  ): Promise<SearchHitWithDocument[]> {
+    const ids = [...new Set(hits.map((h) => h.documentId))];
+    if (ids.length === 0) {
+      return [];
+    }
+    const docs = await this.prisma.document.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, filename: true },
+    });
+    const nameById = new Map(
+      docs.map((d) => [d.id, d.filename?.trim() || d.id] as const),
+    );
+    return hits.map((h) => ({
+      ...h,
+      documentName: nameById.get(h.documentId) ?? h.documentId,
+    }));
+  }
+
+  /**
    * POST /api/rag/search
    */
   async search(dto: SearchRequestDto) {
@@ -107,13 +130,15 @@ export class RagService {
       dto.documentId?.trim() ?? null,
     );
 
+    const results = await this.attachDocumentDisplayNames(hits);
+
     return {
       query: q,
       topK,
       filterDocumentId: dto.documentId?.trim() ?? null,
       dimensions,
       totalChunksCompared,
-      results: hits,
+      results,
     };
   }
 
@@ -165,17 +190,37 @@ export class RagService {
       docFilter,
     );
 
+    const hitsWithDoc = await this.attachDocumentDisplayNames(hits);
+
+    let filterDocumentName: string | null = null;
+    if (docFilter) {
+      const fromHit = hitsWithDoc.find((h) => h.documentId === docFilter);
+      if (fromHit) {
+        filterDocumentName = fromHit.documentName;
+      } else {
+        const docRow = await this.prisma.document.findUnique({
+          where: { id: docFilter },
+          select: { filename: true },
+        });
+        filterDocumentName = docRow?.filename?.trim() || docFilter;
+      }
+    }
+
     yield JSON.stringify({
       type: 'meta',
       filterDocumentId: docFilter,
+      filterDocumentName,
       dimensions,
       totalChunksCompared,
-      hitCount: hits.length,
-      hits: hits.map((h) => ({
+      hitCount: hitsWithDoc.length,
+      hits: hitsWithDoc.map((h) => ({
         chunkId: h.chunkId,
         documentId: h.documentId,
         chunkIndex: h.chunkIndex,
         score: h.score,
+        documentName: h.documentName,
+        /** 供前端流式阶段做引用重叠 / 哨兵匹配（与 prompt 中片段顺序一致） */
+        content: h.content,
       })),
     });
 
