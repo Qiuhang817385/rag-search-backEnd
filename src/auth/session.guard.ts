@@ -4,18 +4,30 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 
 import { SessionService } from './session.service';
 import { UsersService } from '../users/users.service';
+import { IS_PUBLIC_KEY } from './public.decorator';
 
 @Injectable()
 export class SessionGuard implements CanActivate {
   constructor(
+    private reflector: Reflector,
     private sessionService: SessionService,
     private usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
+
+    // WebSocket 等非 HTTP 上下文不走 Cookie Session
+    if (context.getType() !== 'http') return true;
+
     const req = context.switchToHttp().getRequest();
     const sid = req.cookies?.session_id;
     if (!sid) throw new UnauthorizedException('未登录');

@@ -8,24 +8,11 @@ import {
   Res,
   Req,
   Get,
-  UseGuards,
 } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { SessionGuard } from './session.guard';
-
-// Request / Response 没有从 express 引入时，TypeScript 里的 Request 往往会落到 全局的 Fetch Request（或别的全局类型）上，那种类型上没有 cookies。
-// cookie-parser 的类型（@types/cookie-parser）是通过 声明合并 给 express 的 Request 加上 cookies 的，所以参数类型必须是 Express 的 Request。
+import { Public } from './public.decorator';
 import type { Request, Response } from 'express';
-
-interface LoginDto {
-  email: string;
-  password: string;
-}
-interface RegisterDto {
-  email: string;
-  password: string;
-  name?: string;
-}
+import { LoginDto, RegisterDto } from '../types/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +21,7 @@ export class AuthController {
     private sessionService: SessionService,
   ) {}
 
+  @Public()
   @Post('register')
   async register(@Body() dto: RegisterDto) {
     // AuthService 内部调 UsersService.create()
@@ -45,6 +33,7 @@ export class AuthController {
     return { success: true, user };
   }
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -77,6 +66,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
@@ -88,7 +78,6 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(SessionGuard)
   async me(@Req() req: Request) {
     // req.user 由 SessionGuard 挂载，已是 DTO 过滤后的数据
     return req.user;

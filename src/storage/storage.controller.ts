@@ -1,14 +1,6 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { StorageService } from './storage.service';
-
-class PresignUploadDto {
-  filename: string;
-  contentType: string;
-}
-
-class PresignDownloadDto {
-  key: string;
-}
+import { PresignDownloadDto, PresignUploadDto } from './dto/presign.dto';
 
 @Controller('storage')
 export class StorageController {
