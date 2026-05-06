@@ -7,5 +7,6 @@ import { RagController } from './rag.controller';
   imports: [EmbeddingModule],
   providers: [RagService],
   controllers: [RagController],
+  exports: [RagService],
 })
 export class RagModule {}

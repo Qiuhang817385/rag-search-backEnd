@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { ChatDeepSeek } from '@langchain/deepseek';
@@ -32,6 +33,9 @@ export class RagService {
     private readonly prisma: PrismaService,
     private readonly embeddingService: EmbeddingService,
   ) {}
+
+  // 给这本记事本取名，通常是类名，方便辨认日志来源
+  private readonly logger = new Logger(RagService.name);
 
   /**
    * 检索核心：向量化 query → 全库或按 documentId 过滤 → 余弦相似度 topK
@@ -113,12 +117,11 @@ export class RagService {
   /**
    * POST /api/rag/search
    */
-  async search(dto: SearchRequestDto) {
-    const q = dto.query?.trim();
+  async search({ query, topK = DEFAULT_TOP_K, documentId }: SearchRequestDto) {
+    const q = query?.trim();
     if (!q) {
       throw new BadRequestException('query 不能为空');
     }
-    let topK = dto.topK ?? DEFAULT_TOP_K;
     if (!Number.isFinite(topK) || topK < 1) {
       topK = DEFAULT_TOP_K;
     }
@@ -127,7 +130,7 @@ export class RagService {
     const { hits, dimensions, totalChunksCompared } = await this.retrieveTopK(
       q,
       topK,
-      dto.documentId?.trim() ?? null,
+      documentId?.trim() ?? null,
     );
 
     const results = await this.attachDocumentDisplayNames(hits);
@@ -135,40 +138,22 @@ export class RagService {
     return {
       query: q,
       topK,
-      filterDocumentId: dto.documentId?.trim() ?? null,
+      filterDocumentId: documentId?.trim() ?? null,
       dimensions,
       totalChunksCompared,
       results,
     };
   }
 
-  private getChatModel(): ChatDeepSeek {
-    const apiKey =
-      process.env.CHAT_API_KEY?.trim() || process.env.DEEPSEEK_API_KEY?.trim();
-    if (!apiKey) {
-      throw new InternalServerErrorException(
-        '未配置 CHAT_API_KEY 或 DEEPSEEK_API_KEY',
-      );
-    }
-    const baseURL =
-      process.env.CHAT_BASE_URL?.trim() ||
-      process.env.BASE_URL?.trim() ||
-      undefined;
-    const model = process.env.CHAT_MODEL?.trim() || 'deepseek-v4-flash';
-
-    return new ChatDeepSeek({
-      model,
-      temperature: Number(process.env.CHAT_TEMPERATURE ?? 0.3),
-    });
-  }
-
   /**
    * 供 Controller 写入 SSE：先检索，再 LangChain stream，逐段 yield JSON 行
    */
-  async *chatSseLines(
-    dto: ChatRequestDto,
-  ): AsyncGenerator<string, void, unknown> {
-    const msg = dto.message?.trim();
+  async *chatSseLines({
+    message,
+    topK = DEFAULT_TOP_K,
+    documentId,
+  }: ChatRequestDto): AsyncGenerator<string, void, unknown> {
+    const msg = message?.trim();
     if (!msg) {
       yield JSON.stringify({
         type: 'error',
@@ -177,13 +162,12 @@ export class RagService {
       return;
     }
 
-    let topK = dto.topK ?? DEFAULT_TOP_K;
     if (!Number.isFinite(topK) || topK < 1) {
       topK = DEFAULT_TOP_K;
     }
     topK = Math.min(Math.floor(topK), MAX_TOP_K);
 
-    const docFilter = dto.documentId?.trim() ?? null;
+    const docFilter = documentId?.trim() ?? null;
     const { hits, dimensions, totalChunksCompared } = await this.retrieveTopK(
       msg,
       topK,
@@ -225,7 +209,10 @@ export class RagService {
     });
 
     const contextBlock = buildContextFromHits(hits);
-    const model = this.getChatModel();
+    const model = new ChatDeepSeek({
+      model: 'deepseek-v4-flash',
+      temperature: 0.3,
+    });
 
     const messages = [
       new SystemMessage(

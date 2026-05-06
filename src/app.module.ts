@@ -9,6 +9,9 @@ import { WebsocketModule } from './websocket/websocket.module';
 import { StorageModule } from './storage/storage.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ChatModule } from './chat/chat.module';
+import { CacheModule } from './cache/cache.module';
+import { LlmModule } from './llm/llm.module';
 
 @Module({
   imports: [
@@ -20,6 +23,11 @@ import { UsersModule } from './users/users.module';
     StorageModule,
     AuthModule,
     UsersModule,
+    ChatModule,
+    CacheModule,
+    LlmModule.forRoot({
+      model: 'deepseek-v4-flash',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
