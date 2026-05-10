@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { CacheModule } from './cache/cache.module';
 import { LlmModule } from './llm/llm.module';
+import { SpeechModule } from './speech/speech.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { LlmModule } from './llm/llm.module';
     LlmModule.forRoot({
       model: 'deepseek-v4-flash',
     }),
+    SpeechModule,
   ],
   controllers: [AppController],
   providers: [AppService],
