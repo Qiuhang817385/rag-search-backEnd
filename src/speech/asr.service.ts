@@ -80,7 +80,10 @@ export class AsrService {
       body: buildForm(),
     });
     if (res.status === 404) {
-      res = await fetch(`${base}/upload`, { method: 'POST', body: buildForm() });
+      res = await fetch(`${base}/upload`, {
+        method: 'POST',
+        body: buildForm(),
+      });
     }
 
     if (!res.ok) {
@@ -301,7 +304,7 @@ export class AsrService {
       );
 
       if (!res.ok) {
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 200));
         continue;
       }
 

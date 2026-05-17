@@ -1,12 +1,8 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { LlmAdapterService } from './llm-adapter.service';
+import type { LlmModuleOptions } from './llm.types';
 
-export interface LlmModuleOptions {
-  apiKey?: string;
-  model?: string;
-  temperature?: number;
-  // 其他配置...
-}
+export type { LlmModuleOptions, LlmProviderConfig, LlmInvokeOptions, ProviderId } from './llm.types';
 
 @Module({})
 export class LlmModule {

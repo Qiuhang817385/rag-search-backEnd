@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "nest start --watch",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -34,6 +34,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1040.0",
     "@langchain/core": "^1.1.42",
     "@langchain/deepseek": "^1.0.25",
+    "@langchain/ollama": "^1.2.7",
     "@langchain/openai": "^1.4.5",
     "@langchain/textsplitters": "^1.0.1",
     "@nestjs/common": "^11.0.1",
