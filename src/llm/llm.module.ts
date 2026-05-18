@@ -1,8 +1,14 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { LlmAdapterService } from './llm-adapter.service';
+import { LlmProviderFactory } from './factory/llm-provider.factory';
 import type { LlmModuleOptions } from './llm.types';
 
-export type { LlmModuleOptions, LlmProviderConfig, LlmInvokeOptions, ProviderId } from './llm.types';
+export type {
+  LlmModuleOptions,
+  LlmProviderConfig,
+  LlmInvokeOptions,
+  ProviderId,
+} from './llm.types';
 
 @Module({})
 export class LlmModule {
@@ -15,9 +21,10 @@ export class LlmModule {
           provide: 'LLM_OPTIONS',
           useValue: options,
         },
+        LlmProviderFactory,
         LlmAdapterService,
       ],
-      exports: [LlmAdapterService],
+      exports: [LlmAdapterService, LlmProviderFactory],
     };
   }
 }

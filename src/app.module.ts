@@ -27,7 +27,18 @@ import { SpeechModule } from './speech/speech.module';
     ChatModule,
     CacheModule,
     LlmModule.forRoot({
-      model: 'deepseek-v4-flash',
+      defaultProvider: 'deepseek',
+      providers: {
+        deepseek: {
+          model: 'deepseek-v4-flash',
+          temperature: 0.3,
+        },
+        ollama: {
+          baseURL: process.env.OLLAMA_BASE_URL ?? 'http://127.0.0.1:11434',
+          model: process.env.OLLAMA_MODEL ?? 'jaahas/qwen3.5-uncensored:9b',
+          temperature: Number(process.env.OLLAMA_TEMPERATURE ?? 0.3),
+        },
+      },
     }),
     SpeechModule,
   ],

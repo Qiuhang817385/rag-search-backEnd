@@ -5,17 +5,14 @@ import { RagChatStrategy } from './strategies/rag-chat.strategy';
 import { RoleplayStrategy } from './strategies/roleplay.strategy';
 import { CacheService } from 'src/cache/cache.service';
 import { LlmAdapterService } from 'src/llm/llm-adapter.service';
+import type { LlmInvokeOptions } from 'src/llm/llm.types';
 import { MessageDto } from './dto/chat.dto';
+import {
+  type ChatStreamBody,
+  toLlmInvokeOptions,
+} from './dto/chat-stream.types';
 import { Observable, from, switchMap, throwError } from 'rxjs';
 
-export interface ChatStreamRequest {
-  sessionId: string;
-  chatType: 'plain' | 'rag' | 'roleplay';
-  userMessage: string;
-  history: MessageDto[];
-}
-
-// chat/chat-router.service.ts
 @Injectable()
 export class ChatRouterService {
   private strategies: Map<string, ChatStrategy> = new Map();
@@ -38,6 +35,7 @@ export class ChatRouterService {
     chatType: 'plain' | 'rag' | 'roleplay',
     userMessage: string,
     history: MessageDto[],
+    llmOptions?: LlmInvokeOptions,
   ): Promise<{ reply: string }> {
     // 1. 获取对应策略
     const strategy = this.strategies.get(chatType);
@@ -49,7 +47,7 @@ export class ChatRouterService {
     const messagesForLLM = await strategy.buildMessages(userMessage, history);
 
     // 3. 调用 LLM
-    const reply = await this.llmAdapter.invoke(messagesForLLM);
+    const reply = await this.llmAdapter.invoke(messagesForLLM, llmOptions);
     // const reply = await this.llmAdapter.stream(messagesForLLM);
 
     // 4. 将本轮对话追加到历史并更新缓存
@@ -67,11 +65,9 @@ export class ChatRouterService {
    * 供 `@Sse()` 使用：先异步组消息，再订阅 LLM 的 token 流（已是 MessageEvent）。
    * 会话落库可在后续用 scan/finalize 在完整正文上调用 cacheService。
    */
-  streamChat({
-    chatType,
-    userMessage,
-    history,
-  }: ChatStreamRequest): Observable<MessageEvent> {
+  streamChat(body: ChatStreamBody): Observable<MessageEvent> {
+    const { chatType, userMessage, history } = body;
+    const llmOptions = toLlmInvokeOptions(body);
     const strategy = this.strategies.get(chatType);
 
     //  if (!strategy) throw new Error('未知聊天类型');
@@ -131,7 +127,7 @@ export class ChatRouterService {
       );
     }
     return from(strategy.buildMessages(userMessage, history)).pipe(
-      switchMap((messages) => this.llmAdapter.stream(messages)),
+      switchMap((messages) => this.llmAdapter.stream(messages, llmOptions)),
     );
   }
 }

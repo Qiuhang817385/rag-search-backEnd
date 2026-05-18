@@ -15,6 +15,14 @@ export interface LlmProviderConfig {
   /** 模型名，如 deepseek-v4-flash、llama3.1:8b */
   model?: string;
   temperature?: number;
+  /** Ollama top_p */
+  topP?: number;
+  /** Ollama top_k */
+  topK?: number;
+  /** Ollama presence_penalty */
+  presencePenalty?: number;
+  /** Ollama repeat_penalty */
+  repeatPenalty?: number;
   /** 请求超时（毫秒），可选 */
   timeoutMs?: number;
 }
@@ -42,6 +50,10 @@ export interface LlmInvokeOptions {
   provider?: ProviderId;
   model?: string;
   temperature?: number;
+  topP?: number;
+  topK?: number;
+  presencePenalty?: number;
+  repeatPenalty?: number;
 }
 
 /** Factory 内部使用的「已解析」配置（第 6 步实现合并逻辑） */

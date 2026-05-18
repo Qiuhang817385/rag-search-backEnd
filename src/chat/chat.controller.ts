@@ -2,7 +2,7 @@ import { Body, Controller, MessageEvent, Post, Sse } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 import { ChatRouterService } from './chat-router.service';
-import type { ChatStreamRequest } from './chat-router.service';
+import { ChatStreamDto } from './dto/chat-stream.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -29,7 +29,7 @@ export class ChatController {
   /** Nest 负责 `text/event-stream` 与逐条写出；body 仍为 JSON POST */
   @Post('stream')
   @Sse()
-  streamChat(@Body() body: ChatStreamRequest): Observable<MessageEvent> {
+  streamChat(@Body() body: ChatStreamDto): Observable<MessageEvent> {
     return this.chatRouterService.streamChat(body);
   }
 }
