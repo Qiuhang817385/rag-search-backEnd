@@ -1,0 +1,8 @@
+{
+  "node_version": "20",
+  "dependencies": ["."],
+  "graphs": {
+    "interview_agent": "./src/agent.ts:graph"
+  },
+  "env": "../.env"
+}
